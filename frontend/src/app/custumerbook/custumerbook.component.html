@@ -1,0 +1,139 @@
+<body>
+  <form [formGroup]="custumerBookForm">
+    <div class="container">
+      <table>
+        <tr>
+          <td>
+            <label class="form-select-label"> Select a custumer: </label>
+            <select
+              #comboboxCustumer
+              formControlName="custumer"
+              class="form-select form-select-sm"
+              (change)="
+                comboboxCustumerSelected(
+                  comboboxCustumer.value,
+                  comboboxProfessional.value
+                )
+              "
+            >
+              <option
+                *ngFor="let person of comboboxCustumersData"
+                value="{{ person.id }}"
+              >
+                {{ person.name }}
+              </option>
+            </select>
+          </td>
+          <td>
+            <label class="form-select-label"> Select a professional: </label>
+            <select
+              #comboboxProfessional
+              formControlName="professional"
+              class="form-select form-select-sm"
+              (change)="
+                comboboxProfessionalSelected(
+                  comboboxProfessional.value,
+                  comboboxCustumer.value
+                )
+              "
+            >
+              <option
+                *ngFor="let person of comboboxProfessionalsData"
+                value="{{ person.id }}"
+              >
+                {{ person.name }}
+              </option>
+            </select>
+          </td>
+        </tr>
+      </table>
+
+      <table class="table">
+        <thead>
+          <tr align="center">
+            <th colspan="4" scope="col">Already scheduled dates</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr align="center">
+            <th scope="col">Profissional</th>
+            <th scope="col">DAY</th>
+            <th scope="col">TIME</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr align="center" *ngFor="let slots of custumerScheduledTableData">
+            <td>{{ slots.name }}</td>
+            <td>{{ slots.day }}</td>
+            <td>{{ slots.time }}</td>
+            <td>
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="
+                  deleteCustumerScheduled(
+                    slots.id,
+                    slots.id_prof_book,
+                    comboboxCustumer.value,
+                    comboboxProfessional.value,
+                    slots.day,
+                    slots.time
+                  )
+                "
+              >
+                x
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      &nbsp;
+
+      <table class="table">
+        <thead>
+          <tr align="center">
+            <th colspan="5" scope="col">Available dates</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr align="center">
+            <th scope="col">Professional</th>
+            <th scope="col">Time</th>
+            <th scope="col">Day</th>
+            <th scope="col">Available</th>
+            <th scope="col">Assign</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            align="center"
+            *ngFor="let slots of professionalScheduledTableData"
+          >
+            <td>{{ slots.name }}</td>
+            <td>{{ slots.time }}</td>
+            <td>{{ slots.day }}</td>
+            <td>{{ slots.is_available }}</td>
+            <td>
+              <button
+                *ngIf="slots.is_available"
+                class="btn btn-sm btn-success"
+                (click)="
+                  assignProfessionalScheduled(
+                    slots.id,
+                    slots.day,
+                    slots.time,
+                    comboboxCustumer.value,
+                    comboboxProfessional.value
+                  )
+                "
+              >
+                Check
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </form>
+</body>

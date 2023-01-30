@@ -1,0 +1,37 @@
+<form>
+  <div class="container mt-5">
+    <h1>BOOK</h1>
+    <div class="form-check">
+      <input
+        [formControl]="radiobook"
+        routerLink="custumerbook"
+        class="form-check-input"
+        type="radio"
+        name="flexRadioDefault"
+        value="custumer"
+        (change)="radioBookSelected('custumer')"
+        id="flexRadioDefault1"
+      />
+      <label class="form-check-label" for="flexRadioDefault1">
+        Custumers Book
+      </label>
+    </div>
+    <div class="form-check">
+      <input
+        [formControl]="radiobook"
+        routerLink="professionalbook"
+        class="form-check-input"
+        type="radio"
+        name="flexRadioDefault"
+        value="professional"
+        id="flexRadioDefault2"
+        (change)="radioBookSelected('professional')"
+      />
+      <label class="form-check-label" for="flexRadioDefault2">
+        Profesionals Book
+      </label>
+    </div>
+    &nbsp;&nbsp;
+    <router-outlet></router-outlet>
+  </div>
+</form>

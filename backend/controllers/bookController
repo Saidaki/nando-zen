@@ -1,0 +1,139 @@
+var express = require("express");
+var bookRouter = express.Router();
+
+var db = require("../dbconnection.js");
+
+//save professional schedule
+bookRouter.post("", (req, res) => {
+  let idProfessional = req.body.professional;
+  let slot = req.body.day + req.body.time;
+  
+  let qry = `select slot from professional_book where fk_professional = ${idProfessional} AND slot = '${slot}' `;
+  db.query(qry, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({
+        message: "Error",
+        data: err,
+      });
+    }
+    if (result.length > 0) {
+      res.send({
+        message: "Register already exists.",
+        idProfessional: idProfessional,
+      });
+    } else {
+      let insertQuery = `insert into professional_book(fk_professional, slot) values ('${idProfessional}', '${slot}')`;
+      db.query(insertQuery, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            message: "Error",
+            data: err,
+          });
+        }
+      });
+      res.send({
+        message: "Register saved.",
+        idProfessional: idProfessional,
+      });
+    }
+  });
+});
+
+//delete professional schedule
+bookRouter.delete("/:id", (req, res) => {
+  let id = req.params.id;
+  let qry = `delete from professional_book WHERE id = ${id}`;
+  db.query(qry, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({
+        message: "Error",
+        data: err,
+        idProfessional: id,
+      });
+    } else {
+      res.send({
+        message: "data deleted",
+        idProfessional: id,
+      });
+    }
+  });
+});
+
+//assign profissional schedule
+bookRouter.put("", (req, res) => {
+  let idCustumer = req.query.idCustumer;
+  let idProfessional = req.query.idProfessional;
+  let beforeTime = req.query.beforeTime;
+  let afterTime = req.query.afterTime;
+  let slotId = req.query.slotId;
+  let insertQuery = `insert into custumer_professional_book(fk_professional_book, fk_custumer) values ('${slotId}', '${idCustumer}')`;
+  db.query(insertQuery, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({
+        message: "Error",
+        data: err,
+      });
+    } else {
+      let updatequery = `update professional_book SET is_available = 0 
+      WHERE id = '${slotId}'
+      OR (fk_professional = '${idProfessional}' AND slot = '${beforeTime}')
+      OR (fk_professional = '${idProfessional}' AND slot = '${afterTime}')
+      `;
+      db.query(updatequery, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            message: "Error",
+            data: err,
+          });
+        }
+        res.send({
+          message: "Register saved.",
+        });
+      });
+    }
+  });
+});
+
+//delete custumer assign
+bookRouter.delete("/assign/:id", (req, res) => {
+  let idProfessional = req.query.idProfessional;
+  let beforeTime = req.query.beforeTime;
+  let afterTime = req.query.afterTime;
+  let id = req.params.id;
+  let id_prof_book = req.query.id_prof_book;
+  let qry = `delete from custumer_professional_book WHERE id = ${id}`;
+  db.query(qry, (err, result) => {
+    if (err) {
+      console.log(err);
+      res.send({
+        message: "Error",
+        data: err,
+        idProfessional: id,
+      });
+    } else {
+      let updatequery = `update professional_book SET is_available = 1 WHERE id = '${id_prof_book}'      
+      OR (fk_professional = '${idProfessional}' AND slot = '${beforeTime}')
+      OR (fk_professional = '${idProfessional}' AND slot = '${afterTime}')
+      `;
+      db.query(updatequery, (err, result) => {
+        if (err) {
+          console.log(err);
+          res.send({
+            message: "Error",
+            data: err,
+          });
+        }
+        res.send({
+          message: "data deleted.",
+        });
+      });
+    }
+  });
+});
+
+module.exports = bookRouter;
